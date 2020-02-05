@@ -6,7 +6,9 @@
         <a href="//codepen.io/ettrics/pen/QbPEeg">Codepen</a>
       </h4>
     </section>
-    <Kanban :stages="statuses" :blocks="blocks" @update-block="updateBlock">
+    <Kanban :stages="statuses" :blocks="blocks" :config="{
+      revertOnSpill: true
+    }" @update-block="updateBlock" @before-update-block="beforeUpdateBlock">
       <div v-for="stage in statuses" :slot="stage" :key="stage">
         <h2>
           {{ stage }}
@@ -65,6 +67,9 @@ export default {
         title: faker.company.bs(),
       });
     }, 500),
+    beforeUpdateBlock(done, cancel) {
+      cancel();
+    },
   },
 };
 </script>

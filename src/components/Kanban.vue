@@ -48,6 +48,10 @@
         type: Object,
         default: null,
       },
+      beforeUpdateBlockHook: {
+        type: Boolean,
+        default: false,
+      },
     },
 
     data() {
@@ -98,20 +102,26 @@
         el.classList.add('is-moving');
       })
       .on('drop', (block, list, source) => {
-        let index = 0;
-        for (index = 0; index < list.children.length; index += 1) {
-          if (list.children[index].classList.contains('is-moving')) break;
+        const done = () => {
+          let index = 0;
+          for (index = 0; index < list.children.length; index += 1) {
+            if (list.children[index].classList.contains('is-moving')) break;
+          }
+
+          let newState = list.dataset.status;
+
+          if (this.machine) {
+            const transition = this.findTransition(list, source);
+            if (!transition) return;
+            newState = this.machine.transition(source.dataset.status, transition).value;
+          }
+          this.$emit('update-block', block.dataset.blockId, newState, index);
+        };
+        if (this.beforeUpdateBlockHook) {
+          this.$emit('before-update-block', done, this.drake.cancel);
+        } else {
+          done();
         }
-
-        let newState = list.dataset.status;
-
-        if (this.machine) {
-          const transition = this.findTransition(list, source);
-          if (!transition) return;
-          newState = this.machine.transition(source.dataset.status, transition).value;
-        }
-
-        this.$emit('update-block', block.dataset.blockId, newState, index);
       })
       .on('dragend', (el) => {
         el.classList.remove('is-moving');
