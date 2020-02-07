@@ -102,23 +102,22 @@
         el.classList.add('is-moving');
       })
       .on('drop', (block, list, source) => {
+        const blockId = block.dataset.blockId;
+        let newState = list.dataset.status;
+        console.log(newState, list.children);
+        const index = Array.from(list.children).findIndex(el => el.classList.contains('is-moving'));
         const done = () => {
-          let index = 0;
-          for (index = 0; index < list.children.length; index += 1) {
-            if (list.children[index].classList.contains('is-moving')) break;
-          }
-
-          let newState = list.dataset.status;
-
+          console.log(this.machine);
           if (this.machine) {
             const transition = this.findTransition(list, source);
             if (!transition) return;
             newState = this.machine.transition(source.dataset.status, transition).value;
           }
-          this.$emit('update-block', block.dataset.blockId, newState, index);
+          console.log(newState);
+          this.$emit('update-block', blockId, newState, index);
         };
         if (this.beforeUpdateBlockHook) {
-          this.$emit('before-update-block', done, this.drake.cancel);
+          this.$emit('before-update-block', blockId, newState, index, done, this.drake.cancel);
         } else {
           done();
         }

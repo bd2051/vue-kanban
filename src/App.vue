@@ -8,7 +8,10 @@
     </section>
     <Kanban :stages="statuses" :blocks="blocks" :config="{
       revertOnSpill: true
-    }" @update-block="updateBlock" @before-update-block="beforeUpdateBlock">
+    }"
+            :before-update-block-hook="true"
+            @update-block="updateBlock"
+            @before-update-block="beforeUpdateBlock">
       <div v-for="stage in statuses" :slot="stage" :key="stage">
         <h2>
           {{ stage }}
@@ -67,8 +70,12 @@ export default {
         title: faker.company.bs(),
       });
     }, 500),
-    beforeUpdateBlock(done, cancel) {
-      cancel();
+    beforeUpdateBlock(id, status, index, done, cancel) {
+      if (true) {
+        done();
+      } else {
+        cancel();
+      }
     },
   },
 };
