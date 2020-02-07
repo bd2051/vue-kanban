@@ -104,16 +104,13 @@
       .on('drop', (block, list, source) => {
         const blockId = block.dataset.blockId;
         let newState = list.dataset.status;
-        console.log(newState, list.children);
         const index = Array.from(list.children).findIndex(el => el.classList.contains('is-moving'));
         const done = () => {
-          console.log(this.machine);
           if (this.machine) {
             const transition = this.findTransition(list, source);
             if (!transition) return;
             newState = this.machine.transition(source.dataset.status, transition).value;
           }
-          console.log(newState);
           this.$emit('update-block', blockId, newState, index);
         };
         if (this.beforeUpdateBlockHook) {
